@@ -30,9 +30,6 @@ static_resources:
                   prefix: "/"
                 route:
                   cluster: cluster
-                  retry_policy:
-                    num_retries: 5
-                    retry_on: 5xx
           http_filters:
           - name: envoy.filters.http.router
             typed_config:
@@ -52,20 +49,52 @@ static_resources:
   - name: cluster1
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
-    outlier_detection: {}
+    outlier_detection:
+      max_ejection_percent: 100
     load_assignment:
       cluster_name: cluster1
+      policy:
+        overprovisioning_factor: 10000000
       endpoints:
-      - lb_endpoints:
+      - priority: 0
+        lb_endpoints:
         - endpoint:
             address:
               socket_address:
                 address: localhost
                 port_value: 8000
+        - endpoint:
+            address:
+              socket_address:
+                address: localhost
+                port_value: 8001
+        - endpoint:
+            address:
+              socket_address:
+                address: localhost
+                port_value: 8002
+      - priority: 1
+        lb_endpoints:
+        - endpoint:
+            address:
+              socket_address:
+                address: localhost
+                port_value: 8003
+        - endpoint:
+            address:
+              socket_address:
+                address: localhost
+                port_value: 8004
+        - endpoint:
+            address:
+              socket_address:
+                address: localhost
+                port_value: 8005
   - name: cluster2
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
-    outlier_detection: {}
+    outlier_detection:
+      max_ejection_percent: 100
     load_assignment:
       cluster_name: cluster2
       endpoints:

@@ -13,6 +13,7 @@ func main() {
 	success := true
 	clusterName := os.Getenv("CLUSTER_NAME")
 	portStr := os.Getenv("SERVER_PORT")
+	priority := os.Getenv("PRIORITY")
 	port, err := strconv.Atoi(portStr)
 	if err != nil {
 		log.Fatal(err)
@@ -20,11 +21,11 @@ func main() {
 
 	http.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
 		if success {
-			io.WriteString(w, fmt.Sprintf("%s - success\n", clusterName))
+			io.WriteString(w, fmt.Sprintf("%s - %s - %s - success\n", clusterName, priority, portStr))
 		} else {
 			w.WriteHeader(http.StatusInternalServerError)
 
-			io.WriteString(w, fmt.Sprintf("%s - fail\n", clusterName))
+			io.WriteString(w, fmt.Sprintf("%s - %s - %s - fail\n", clusterName, priority, portStr))
 		}
 	})
 
